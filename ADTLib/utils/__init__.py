@@ -163,7 +163,7 @@ def tab_create(Onsets,Filename_,save_dir_, bpm):
         DrumMIDI.addTempo(track, time, bpm)
 
         midi_time = [0, 0, 0] 
-        midi_pitch = [46, 38, 36] 
+        midi_pitch = [44, 38, 36] 
         # midi_time[0] HH time
         # midi_time[1] SD time
         # midi_time[2] KD time
@@ -171,8 +171,6 @@ def tab_create(Onsets,Filename_,save_dir_, bpm):
         for line in lines:
             for i in range(len(line)): # ['HH' '|' 'o' '-' '-' '-' '-' 'o' 'o' '-' '-' 'o' '-' 'o' 'o' '-' 'o' '-' '|' ] X 3개 (HH, SD, KD)
                 for drumItem in line[i]:
-                    if i == 0:
-                        continue
                     for oneNote in drumItem:
                         if oneNote == '-':
                             midi_time[i] = midi_time[i] + 0.25
