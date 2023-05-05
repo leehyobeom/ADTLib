@@ -35,5 +35,5 @@ if args.o!='yes':
 if args.ot!='yes':
     args.ot=args.ot[0]
     
-out=ADT.ADT(TrackNames, bpm=args.bpm, save_dir=args.od)
+out=ADT.ADT(TrackNames, bpm=int(args.bpm[0]), save_dir=args.od)
 
