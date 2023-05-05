@@ -12,8 +12,10 @@ import numpy as np
 import subprocess
 from fpdf import FPDF
 import ADTLib
-import tensorflow as tf
-from tensorflow.contrib import rnn
+# import tensorflow as tf
+import tensorflow.compat.v1 as tf
+# from tensorflow.contrib import rnn
+tf.disable_v2_behavior()
 
 def spec(file):
     return madmom.audio.spectrogram.Spectrogram(file, frame_size=2048, hop_size=512, fft_size=2048,num_channels=1)
@@ -250,15 +252,28 @@ class SA:
      def cell_create(self,scope_name):
          with tf.variable_scope(scope_name):
              if self.cell_type == 'tanh':
-                 cells = rnn.MultiRNNCell([rnn.BasicRNNCell(self.n_hidden[i]) for i in range(self.n_layers)], state_is_tuple=True)
+                 cells = tf.nn.rnn_cell.MultiRNNCell([tf.nn.rnn_cell.BasicRNNCell(self.n_hidden[i]) for i in range(self.n_layers)], state_is_tuple=True)
              elif self.cell_type == 'LSTM': 
-                 cells = rnn.MultiRNNCell([rnn.BasicLSTMCell(self.n_hidden[i]) for i in range(self.n_layers)], state_is_tuple=True)
+                 cells = tf.nn.rnn_cell.MultiRNNCell([tf.nn.rnn_cell.BasicLSTMCell(self.n_hidden[i]) for i in range(self.n_layers)], state_is_tuple=True)
              elif self.cell_type == 'GRU':
-                 cells = rnn.MultiRNNCell([rnn.GRUCell(self.n_hidden[i]) for i in range(self.n_layers)], state_is_tuple=True)
+                 cells = tf.nn.rnn_cell.MultiRNNCell([tf.nn.rnn_cell.GRUCell(self.n_hidden[i]) for i in range(self.n_layers)], state_is_tuple=True)
              elif self.cell_type == 'LSTMP':
-                 cells = rnn.MultiRNNCell([rnn.LSTMCell(self.n_hidden[i]) for i in range(self.n_layers)], state_is_tuple=True)
-             cells = rnn.DropoutWrapper(cells, input_keep_prob=self.dropout_ph,output_keep_prob=self.dropout_ph) 
+                 cells = tf.nn.rnn_cell.MultiRNNCell([tf.nn.rnn_cell.LSTMCell(self.n_hidden[i]) for i in range(self.n_layers)], state_is_tuple=True)
+             cells = tf.nn.rnn_cell.DropoutWrapper(cells, input_keep_prob=self.dropout_ph,output_keep_prob=self.dropout_ph) 
          return cells
+
+    # def cell_create(self,scope_name):
+    #      with tf.variable_scope(scope_name):
+    #          if self.cell_type == 'tanh':
+    #              cells = rnn.MultiRNNCell([rnn.BasicRNNCell(self.n_hidden[i]) for i in range(self.n_layers)], state_is_tuple=True)
+    #          elif self.cell_type == 'LSTM': 
+    #              cells = rnn.MultiRNNCell([rnn.BasicLSTMCell(self.n_hidden[i]) for i in range(self.n_layers)], state_is_tuple=True)
+    #          elif self.cell_type == 'GRU':
+    #              cells = rnn.MultiRNNCell([rnn.GRUCell(self.n_hidden[i]) for i in range(self.n_layers)], state_is_tuple=True)
+    #          elif self.cell_type == 'LSTMP':
+    #              cells = rnn.MultiRNNCell([rnn.LSTMCell(self.n_hidden[i]) for i in range(self.n_layers)], state_is_tuple=True)
+    #          cells = rnn.DropoutWrapper(cells, input_keep_prob=self.dropout_ph,output_keep_prob=self.dropout_ph) 
+    #      return cells
      
      def weight_bias_init(self):
                
