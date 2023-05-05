@@ -24,6 +24,7 @@ p.add_argument('I', nargs='*',help='InputFileNames')
 p.add_argument('-od', nargs=1,help='output_dir', default=None)
 p.add_argument('-o', nargs=1,help='output_text', choices=['yes','no'], default='yes')
 p.add_argument('-ot', nargs=1,help='output_tab', choices=['yes','no'], default='yes')
+p.add_argument('-bpm', nargs=1)
 args=p.parse_args()
 TrackNames=args.I
 
@@ -34,5 +35,5 @@ if args.o!='yes':
 if args.ot!='yes':
     args.ot=args.ot[0]
     
-out=ADT.ADT(TrackNames, text=args.o, tab=args.ot, save_dir=args.od)
+out=ADT.ADT(TrackNames, bpm=args.bpm, save_dir=args.od)
 

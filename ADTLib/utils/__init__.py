@@ -17,6 +17,8 @@ import tensorflow.compat.v1 as tf
 # from tensorflow.contrib import rnn
 tf.disable_v2_behavior()
 
+from midiutil import MIDIFile
+
 def spec(file):
     return madmom.audio.spectrogram.Spectrogram(file, frame_size=2048, hop_size=512, fft_size=2048,num_channels=1)
     
@@ -59,7 +61,7 @@ def load_pp_param(save_path):
     
 
 
-def tab_create(Onsets,Filename_,save_dir_):
+def tab_create(Onsets,Filename_,save_dir_, bpm):
     quantisation_per_beat=4
     bars_per_line=4
     notation=['x','o','o']
@@ -143,31 +145,68 @@ def tab_create(Onsets,Filename_,save_dir_):
                     if onset_bar_location[i][j]>=(k+1)*quantisation_per_bar:
                         onset_tab_location[i][j]+=1
                 lines[int(onset_line[i][j])][i][int(onset_tab_location[i][j])]=notation[i]
+
+
+
             
         lines_new=[]
+        #================================= Make Midi File==================================
+
+        track    = 0
+        channel  = 0
+        time     = 0    # In beats
+        duration = 1    # In beats
+        volume   = 100  # 0-127, as per the MIDI standard
+
+        DrumMIDI = MIDIFile(1)  # One track, defaults to format 1 (tempo track is created
+                            # automatically)
+        DrumMIDI.addTempo(track, time, bpm)
+
+        midi_time = [0, 0, 0] 
+        midi_pitch = [46, 38, 36] 
+        # midi_time[0] HH time
+        # midi_time[1] SD time
+        # midi_time[2] KD time
+
+        for line in lines:
+            for i in range(len(line)): # ['HH' '|' 'o' '-' '-' '-' '-' 'o' 'o' '-' '-' 'o' '-' 'o' 'o' '-' 'o' '-' '|' ] X 3개 (HH, SD, KD)
+                for drumItem in line[i]:
+                    if i == 0:
+                        continue
+                    for oneNote in drumItem:
+                        if oneNote == '-':
+                            midi_time[i] = midi_time[i] + 0.25
+                        if oneNote == 'o':
+                            midi_time[i] = midi_time[i] + 0.25
+                            DrumMIDI.addNote(track, channel, midi_pitch[i], midi_time[i], duration, volume)
         
-        for i in range(len(lines)):
-            lines_new.append([])
-            for j in range(len(lines[i])):
-                lines_new[i].append(''.join(lines[i][j]))  
+        with open("drum.mid", "wb") as output_file:
+            DrumMIDI.writeFile(output_file)
+
+
+        #==================================================================================        
+        # for i in range(len(lines)):
+        #     lines_new.append([])
+        #     for j in range(len(lines[i])):
+        #         lines_new[i].append(''.join(lines[i][j]))  
                 
         os.remove("DB.txt")
-        if save_dir_!=None:
-            current_dir=os.getcwd()
-            os.chdir(save_dir_)
-        pdf = FPDF(format='A4')
-        pdf.add_page()
-        pdf.set_font("Courier", size=12)
-        pdf.cell(200, 10, txt=TrackName,ln=1, align="C")
-        pdf.set_font("Courier", size=10)
+        # if save_dir_!=None:
+        #     current_dir=os.getcwd()
+        #     os.chdir(save_dir_)
+        # pdf = FPDF(format='A4')
+        # pdf.add_page()
+        # pdf.set_font("Courier", size=12)
+        # pdf.cell(200, 10, txt=TrackName,ln=1, align="C")
+        # pdf.set_font("Courier", size=10)
         
-        for i in range(len(lines_new)):
-            for j in range(len(lines_new[i])):
-                pdf.cell(0,3,txt=lines_new[i][j],ln=1,align="C")
-            pdf.cell(0,5,txt='',ln=1,align="C")
-        pdf.output(pre_trackname[len(pre_trackname)-1].split('.')[0]+'_drumtab.pdf')
-        if save_dir_!=None:
-            os.chdir(current_dir)
+        # for i in range(len(lines_new)):
+        #     for j in range(len(lines_new[i])):
+        #         pdf.cell(0,3,txt=lines_new[i][j],ln=1,align="C")
+        #     pdf.cell(0,5,txt='',ln=1,align="C")
+        # pdf.output(pre_trackname[len(pre_trackname)-1].split('.')[0]+'_drumtab.pdf')
+        # if save_dir_!=None:
+        #     os.chdir(current_dir)
         
         
     else: 
