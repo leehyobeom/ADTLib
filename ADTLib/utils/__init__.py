@@ -180,7 +180,7 @@ def tab_create(Onsets,Filename_,save_dir_, bpm):
                             midi_time[i] = midi_time[i] + 0.25
                             DrumMIDI.addNote(track, channel, midi_pitch[i], midi_time[i], duration, volume)
         
-        with open("drums.mid", "wb") as output_file:
+        with open(os.path.join(save_dir_ if save_dir_ else "", "drums.mid"), "wb") as output_file:
             DrumMIDI.writeFile(output_file)
 
 
