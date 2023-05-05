@@ -40,10 +40,10 @@ def meanPPmm(Track,Lambda,mi,ma,hop=512,fs=44100,dif=0.05):
             values=np.append(values,Track[i+1])
     if len(onsets) >0: 
         onsets=(onsets*hop)/float(fs)
-    for i in range(1,len(onsets)):
-        if abs(onsets[i]-onsets[i-1])<dif:
-            ind=np.argmax(values[i-1:i+1])
-            np.delete(onsets,onsets[i-1+ind])
+    # for i in range(1,len(onsets)):
+    #     if abs(onsets[i]-onsets[i-1])<dif:
+    #         ind=np.argmax(values[i-1:i+1])
+    #         np.delete(onsets,onsets[i-1+ind])
   
     return onsets
 
