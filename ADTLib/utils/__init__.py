@@ -64,7 +64,7 @@ def load_pp_param(save_path):
 def tab_create(Onsets,Filename_,save_dir_, bpm):
     quantisation_per_beat=4
     bars_per_line=4
-    notation=['x','o','o']
+    notation=['o','o','o']
     pre_trackname=Filename_.split('/')
     TrackName=pre_trackname[len(pre_trackname)-1].split('.')[0]+' Drum Tab'
     wav=Filename_.split('.')[0]+'.wav'
